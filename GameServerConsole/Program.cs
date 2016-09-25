@@ -1,4 +1,5 @@
 ﻿using Lidgren.Network;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,10 @@ namespace GameServerConsole
     {
         static NetPeerConfiguration config = new NetPeerConfiguration("myGame")
         {
-            //LocalAddress = System.Net.IPAddress.Parse("127.0.0.1"),
             Port = 12345
-            
         };
         static NetServer server;
+        static List<PlayerData> Players = new List<PlayerData>();
 
         static void Main(string[] args)
         {
@@ -41,13 +41,15 @@ namespace GameServerConsole
                             //This type handles all data that has been sent by you.
                             // broadcast message to all clients
                             var inMess = msgIn.ReadString();
-                            NetOutgoingMessage reply = server.CreateMessage();
-                            reply.Write(inMess);
-                            foreach (NetConnection client in server.Connections)
-                                server.SendMessage(reply, client, NetDeliveryMethod.ReliableOrdered);
+                            process(inMess);
+                            //NetOutgoingMessage reply = server.CreateMessage();
+                            //reply.Write(inMess);
+                            //foreach (NetConnection client in server.Connections)
+                            //    server.SendMessage(reply, client, NetDeliveryMethod.ReliableOrdered);
                             break;
                         //All other types are for library related events (some examples)
                         case NetIncomingMessageType.DiscoveryRequest:
+                            Console.WriteLine("Discovery Request from Client");
                             NetOutgoingMessage msg = server.CreateMessage();
                             //add a string as welcome text
                             msg.Write("Greetings from " + config.AppIdentifier + " server ");
@@ -64,6 +66,32 @@ namespace GameServerConsole
                 }
             }
 
+        }
+
+        private static void process(string inMess)
+        {
+            Console.WriteLine("Data " + inMess);
+            PlayerData p = JsonConvert.DeserializeObject<PlayerData>(inMess);
+            switch(p.header)
+            {
+                case "Join":
+                    // Add the player to the server copy
+                    Players.Add(p);
+                    // send the message to all clients that players are joined
+                    foreach (PlayerData player in Players)
+                    {
+                        PlayerData joined = new PlayerData("Joined",player.imageName, player.playerID, player.X, player.Y);
+                        string json = JsonConvert.SerializeObject(joined);
+                        //
+                        NetOutgoingMessage JoinedMessage = server.CreateMessage();
+                        JoinedMessage.Write(json);
+                        server.SendToAll(JoinedMessage, NetDeliveryMethod.ReliableOrdered);
+                    }
+
+                    break;
+                default:
+                    break;
+            }
         }
 
         private static void GotMessage(object state)

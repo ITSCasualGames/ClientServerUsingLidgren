@@ -42,20 +42,43 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\GameServerConsole\PlayerData.cs">
+      <Link>PlayerData.cs</Link>
+    </Compile>
     <Compile Include="Game1.cs" />
-    <Compile Include="NetworkHelper.cs" />
+    <Compile Include="Loader.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\PlayerImages\Badges_0.png" />
+    <Content Include="Content\PlayerImages\Badges_1.png" />
+    <Content Include="Content\PlayerImages\Badges_10.png" />
+    <Content Include="Content\PlayerImages\Badges_11.png" />
+    <Content Include="Content\PlayerImages\Badges_12.png" />
+    <Content Include="Content\PlayerImages\Badges_13.png" />
+    <Content Include="Content\PlayerImages\Badges_2.png" />
+    <Content Include="Content\PlayerImages\Badges_3.png" />
+    <Content Include="Content\PlayerImages\Badges_4.png" />
+    <Content Include="Content\PlayerImages\Badges_5.png" />
+    <Content Include="Content\PlayerImages\Badges_6.png" />
+    <Content Include="Content\PlayerImages\Badges_7.png" />
+    <Content Include="Content\PlayerImages\Badges_8.png" />
+    <Content Include="Content\PlayerImages\Badges_9.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +87,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Content\GameFont.spritefont" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\2017\CG\lidgren-network-gen3-master\lidgren-network-gen3-master\Lidgren.Network\Lidgren.Network.csproj">

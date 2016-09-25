@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LingrenGame", "LingrenGame\LingrenGame.csproj", "{F86A03BB-B4EF-48D1-8E4A-3138FDAB07D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{39A60D3F-2A06-4060-8C5A-3C780E6BB696} = {39A60D3F-2A06-4060-8C5A-3C780E6BB696}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServerConsole", "GameServerConsole\GameServerConsole.csproj", "{39A60D3F-2A06-4060-8C5A-3C780E6BB696}"
 EndProject

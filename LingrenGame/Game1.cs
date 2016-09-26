@@ -90,7 +90,15 @@ namespace LingrenGame
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                NetOutgoingMessage sendMsg = client.CreateMessage();
+                PlayerData playerLeaving = thisPlayer.PlayerDataPacket;
+                playerLeaving.header = "leaving";
+                string json = JsonConvert.SerializeObject(playerLeaving);
+
                 Exit();
+                
+            }
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
             {
                 InGameMessage = "Sending Message";

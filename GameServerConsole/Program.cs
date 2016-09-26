@@ -22,6 +22,7 @@ namespace GameServerConsole
         {
             config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
+            config.EnableMessageType(NetIncomingMessageType.StatusChanged);
 
             server = new NetServer(config);
             config.AutoFlushSendQueue = true;
@@ -31,6 +32,8 @@ namespace GameServerConsole
             //for the server
             for (;;)
             {
+                // Stop the fan from going around needlessly
+                server.MessageReceivedEvent.WaitOne();
                 NetIncomingMessage msgIn;
                 while ((msgIn = server.ReadMessage()) != null)
                 {
@@ -60,6 +63,27 @@ namespace GameServerConsole
                             msgIn.SenderConnection.Approve();
                             break;
 
+                        
+                        case NetIncomingMessageType.StatusChanged:
+
+                            switch ((NetConnectionStatus)msgIn.ReadByte())
+                            {
+                                case NetConnectionStatus.Connected:
+                                    Console.WriteLine("{0} Connected", msgIn.SenderConnection);
+                                    break;
+                                case NetConnectionStatus.Disconnected:
+                                    Console.WriteLine("{0} Disconnected", msgIn.SenderConnection);
+
+                                    break;
+                                case NetConnectionStatus.RespondedAwaitingApproval:
+                                    msgIn.SenderConnection.Approve();
+                                    break;
+                            }
+                            break;
+                        default:
+                            Console.WriteLine("unhandled message with type: "
+                                + msgIn.MessageType);
+                            break;
                     }
                     //Recycle the message to create less garbage
                     server.Recycle(msgIn);

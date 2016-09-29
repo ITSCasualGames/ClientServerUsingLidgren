@@ -45,6 +45,7 @@
     <Compile Include="..\GameServerConsole\PlayerData.cs">
       <Link>PlayerData.cs</Link>
     </Compile>
+    <Compile Include="FadeText.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Player.cs" />

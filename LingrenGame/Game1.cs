@@ -18,7 +18,7 @@ namespace LingrenGame
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-                
+        KeyboardState previous;        
         private NetPeerConfiguration ClientConfig;
         private NetClient client;
         private string InGameMessage = string.Empty;
@@ -52,6 +52,7 @@ namespace LingrenGame
             // Note Named parameters for more readable code
             //client.Connect(host: "127.0.0.1", port: 12345);
             //search in local network at port 50001
+
             client.DiscoverLocalPeers(12345);
             
             base.Initialize();
@@ -65,9 +66,12 @@ namespace LingrenGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            Services.AddService<SpriteBatch>(spriteBatch);
             font = Content.Load<SpriteFont>("GameFont");
-
+            Services.AddService<SpriteFont>(font);
+            new FadeTextManager(this);
             
+
             playerTextures =  Loader.ContentLoad<Texture2D>(Content, @".\PlayerImages\");
 
             // TODO: use this.Content to load your game content here
@@ -89,32 +93,39 @@ namespace LingrenGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState current = Keyboard.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                NetOutgoingMessage sendMsg = client.CreateMessage();
-                PlayerData playerLeaving = thisPlayer.PlayerDataPacket;
-                playerLeaving.header = "leaving";
-                string json = JsonConvert.SerializeObject(playerLeaving);
-
+                
                 Exit();
                 
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            if (previous.IsKeyDown(Keys.Enter) && current.IsKeyUp(Keys.Enter))
             {
-                InGameMessage = "Sending Message";
-                NetOutgoingMessage sendMsg = client.CreateMessage();
-                sendMsg.Write("Hello there from client at " + gameTime.TotalGameTime.ToString());
-                client.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
+                new FadeText(this, new Vector2(100, 100), "Fading out of site");
+                //InGameMessage = "Sending Message";
+                //NetOutgoingMessage sendMsg = client.CreateMessage();
+                //sendMsg.Write("Hello there from client at " + gameTime.TotalGameTime.ToString());
+                //client.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
             }
 
 
-
+            previous = current;
             CheckMessages();
             // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
-
+        protected override void EndRun()
+        {
+            NetOutgoingMessage sendMsg = client.CreateMessage();
+            PlayerData playerLeaving = thisPlayer.PlayerDataPacket;
+            playerLeaving.header = "Leaving";
+            string json = JsonConvert.SerializeObject(playerLeaving);
+            sendMsg.Write(json);
+            client.SendMessage(sendMsg, NetDeliveryMethod.ReliableOrdered);
+            base.EndRun();
+        }
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -199,6 +210,13 @@ namespace LingrenGame
                     GamePlayer newPlayer = new GamePlayer(client, otherPlayer.imageName, otherPlayer.playerID, new Vector2(otherPlayer.X, otherPlayer.Y));
                     OtherPlayers.Add(newPlayer);
 
+                    break;
+                case "Left":
+                    GamePlayer found = OtherPlayers.Find( o => o.PlayerDataPacket.playerID == otherPlayer.playerID);
+                    if(found != null)
+                    {
+                        OtherPlayers.Remove(found);
+                    }
                     break;
                 default:
                     break;

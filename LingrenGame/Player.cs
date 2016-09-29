@@ -30,6 +30,8 @@ namespace LingrenGame
             position = StartPos;
             playerID = playerid;
             ImageName = ImgName;
+            _playerDataPacket = new PlayerData("Joined", ImgName, playerid, StartPos.X, StartPos.Y
+                );
 
         }
 

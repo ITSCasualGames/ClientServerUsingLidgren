@@ -44,7 +44,7 @@ namespace GameServerConsole
                             //This type handles all data that has been sent by you.
                             // broadcast message to all clients
                             var inMess = msgIn.ReadString();
-                            process(inMess);
+                            process(msgIn,inMess);
                             //NetOutgoingMessage reply = server.CreateMessage();
                             //reply.Write(inMess);
                             //foreach (NetConnection client in server.Connections)
@@ -92,7 +92,7 @@ namespace GameServerConsole
 
         }
 
-        private static void process(string inMess)
+        private static void process(NetIncomingMessage msgIn, string inMess)
         {
             Console.WriteLine("Data " + inMess);
             PlayerData p = JsonConvert.DeserializeObject<PlayerData>(inMess);
@@ -113,6 +113,26 @@ namespace GameServerConsole
                     }
 
                     break;
+
+                case "Leaving":
+                    var found = Players.FirstOrDefault(plyr => plyr.playerID == p.playerID);
+                    if(found != null)
+                    {
+                        Players.Remove(found);
+                        NetOutgoingMessage LeftMessage = server.CreateMessage();
+                        msgIn.SenderConnection.Disconnect("Bye");
+
+                        var connectionObj = server.Connections.FirstOrDefault(c => c.RemoteUniqueIdentifier == msgIn.SenderConnection.RemoteUniqueIdentifier);
+                        if (connectionObj != null)
+                            server.Connections.Remove(connectionObj);
+                        found.header = "Left";
+                        string json = JsonConvert.SerializeObject(found);
+                        LeftMessage.Write(json);
+                        server.SendToAll(LeftMessage, NetDeliveryMethod.ReliableOrdered);
+
+                    }
+                    break;
+
                 default:
                     break;
             }

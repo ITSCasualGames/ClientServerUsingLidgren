@@ -82,9 +82,9 @@ namespace LingrenGame
         {
             var sp = Game.Services.GetService<SpriteBatch>();
             var font = Game.Services.GetService<SpriteFont>();
-            Color myColor = new Color(0, 0, 0, blend);
+            Color myColor = new Color((byte)0, (byte)0, (byte)0, blend);
             sp.Begin(SpriteSortMode.Immediate,BlendState.Additive);
-            sp.DrawString(font, text, Position, new Color(255, 255, 255, blend));
+            sp.DrawString(font, text, Position, new Color((byte)255, (byte)255, (byte)255, blend));
             sp.End();
             base.Draw(gameTime);
         }

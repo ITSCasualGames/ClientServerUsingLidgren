@@ -11,9 +11,9 @@ namespace GameServerConsole
 {
     class Program
     {
-        static NetPeerConfiguration config = new NetPeerConfiguration("myGame")
+        static NetPeerConfiguration config = new NetPeerConfiguration("ppGame")
         {
-            Port = 12345
+            Port = 5001
         };
         static NetServer server;
         static List<PlayerData> Players = new List<PlayerData>();

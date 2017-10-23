@@ -43,7 +43,7 @@ namespace LingrenGame
         {
             // TODO: Add your initialization logic here
         
-            ClientConfig = new NetPeerConfiguration("myGame");
+            ClientConfig = new NetPeerConfiguration("ppGame");
             //for the client
             ClientConfig.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
             client = new NetClient(ClientConfig);
@@ -53,7 +53,7 @@ namespace LingrenGame
             //client.Connect(host: "127.0.0.1", port: 12345);
             //search in local network at port 50001
 
-            client.DiscoverLocalPeers(12345);
+            client.DiscoverLocalPeers(5001);
             
             base.Initialize();
         }

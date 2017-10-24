@@ -9,12 +9,13 @@ using System.IO;
 using Newtonsoft.Json;
 using GameServerConsole;
 using Microsoft.Xna.Framework.Graphics;
+using Utilities;
 
 namespace LingrenGame
 {
     
 
-    public class GamePlayer
+    public class GamePlayer : DrawableGameComponent
     {
         string playerID;
         Vector2 position = new Vector2();
@@ -24,8 +25,10 @@ namespace LingrenGame
 
         public string ImageName = string.Empty;
 
-        public GamePlayer(NetClient client,string ImgName, string playerid, Vector2 StartPos)
+        public GamePlayer(Game game,NetClient client,string ImgName, string playerid, Vector2 StartPos)
+                            : base(game)
         {
+            game.Components.Add(this);
             // Created as a reult of a joined message
             position = StartPos;
             playerID = playerid;
@@ -35,9 +38,10 @@ namespace LingrenGame
 
         }
 
-        public GamePlayer(NetClient client, Guid playerid, string ImgName, Vector2 StartPos)
+        public GamePlayer(Game game, NetClient client, Guid playerid, string ImgName, Vector2 StartPos): 
+            base(game)
         {
-
+            game.Components.Add(this);
             position = StartPos;
             playerID = playerid.ToString();
             ImageName = ImgName;
@@ -109,6 +113,17 @@ namespace LingrenGame
         {
             position = newPosition;
 
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            SpriteBatch sp = Game.Services.GetService<SpriteBatch>();
+            SpriteFont font = Game.Services.GetService<SpriteFont>();
+            sp.Begin();
+            sp.DrawString(font, playerID, position + new Vector2(-50, -20),Color.White);
+            sp.Draw( Utility.PlayerTextures[ImageName], Position, Color.White);
+            sp.End();
+            base.Draw(gameTime);
         }
     }
 }

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using GameServerConsole;
 using NSLoader;
 using Utilities;
+using Engine.Engines;
 
 namespace LingrenGame
 {
@@ -54,7 +55,7 @@ namespace LingrenGame
             //search in local network at port 50001
 
             client.DiscoverLocalPeers(5001);
-            
+            new InputEngine(this);
             base.Initialize();
         }
 
@@ -72,7 +73,7 @@ namespace LingrenGame
             new FadeTextManager(this);
             
 
-            playerTextures =  Loader.ContentLoad<Texture2D>(Content, @".\PlayerImages\");
+            Utility.PlayerTextures =  Loader.ContentLoad<Texture2D>(Content, @".\PlayerImages\");
 
             // TODO: use this.Content to load your game content here
         }
@@ -100,7 +101,7 @@ namespace LingrenGame
                 Exit();
                 
             }
-            if (previous.IsKeyDown(Keys.Enter) && current.IsKeyUp(Keys.Enter))
+            if (InputEngine.IsKeyPressed(Keys.Enter))
             {
                 new FadeText(this, new Vector2(100, 100), "Fading out of site");
                 //InGameMessage = "Sending Message";
@@ -135,10 +136,10 @@ namespace LingrenGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             spriteBatch.DrawString(font, InGameMessage, new Vector2(10, 10), Color.White);
-            if(thisPlayer != null)
-            spriteBatch.Draw(playerTextures[thisPlayer.ImageName], thisPlayer.Position, Color.White);
-            foreach(GamePlayer other in OtherPlayers)
-                spriteBatch.Draw(playerTextures[other.ImageName], other.Position, Color.White);
+            //if(thisPlayer != null)
+            //spriteBatch.Draw(playerTextures[thisPlayer.ImageName], thisPlayer.Position, Color.White);
+            //foreach(GamePlayer other in OtherPlayers)
+            //    spriteBatch.Draw(playerTextures[other.ImageName], other.Position, Color.White);
             spriteBatch.End();
             // TODO: Add your drawing code here
 
@@ -164,8 +165,8 @@ namespace LingrenGame
                         InGameMessage = "Connected to " + ServerMessage.SenderEndPoint.Address.ToString();
                         if (thisPlayer == null)
                         {
-                            string ImageName = "Badges_" + Utility.NextRandom(0, playerTextures.Count - 1);
-                            thisPlayer = new GamePlayer(client, Guid.NewGuid(), ImageName,
+                            string ImageName = "Badges_" + Utility.NextRandom(0, Utility.PlayerTextures.Count - 1);
+                            thisPlayer = new GamePlayer(this,client, Guid.NewGuid(), ImageName,
                                           new Vector2(Utility.NextRandom(100, GraphicsDevice.Viewport.Width - 100),
                                                        Utility.NextRandom(100, GraphicsDevice.Viewport.Height - 100)));
 
@@ -206,8 +207,8 @@ namespace LingrenGame
             {
                 case "Joined":
                     // Add the player to this game as another player
-                    string ImageName = "Badges_" + Utility.NextRandom(0, playerTextures.Count - 1);
-                    GamePlayer newPlayer = new GamePlayer(client, otherPlayer.imageName, otherPlayer.playerID, new Vector2(otherPlayer.X, otherPlayer.Y));
+                    string ImageName = "Badges_" + Utility.NextRandom(0, Utility.PlayerTextures.Count - 1);
+                    GamePlayer newPlayer = new GamePlayer(this,client, otherPlayer.imageName, otherPlayer.playerID, new Vector2(otherPlayer.X, otherPlayer.Y));
                     OtherPlayers.Add(newPlayer);
 
                     break;
